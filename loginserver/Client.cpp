@@ -195,7 +195,6 @@ void Client::Handle_Login(const char* data, unsigned int size)
 	unsigned int d_account_id = 0;
 	string d_pass_hash;
 
-#ifdef WIN32
 	e_buffer = server.eq_crypto->DecryptUsernamePassword(data, size, server.options.GetEncryptionMode());
 	
 	int buffer_len = strlen(e_buffer);
@@ -209,21 +208,6 @@ void Client::Handle_Login(const char* data, unsigned int size)
 	}
 
 	server.eq_crypto->DeleteHeap(e_buffer);
-#else
-	e_buffer = DecryptUsernamePassword(data, size, server.options.GetEncryptionMode());
-
-	int buffer_len = strlen(e_buffer);
-	e_hash.assign(e_buffer, buffer_len);
-	e_user.assign((e_buffer + buffer_len + 1), strlen(e_buffer + buffer_len + 1));
-
-	if(server.options.IsTraceOn())
-	{
-		server_log->Log(log_client, "User: %s", e_user.c_str());
-		server_log->Log(log_client, "Hash: %s", e_hash.c_str());
-	}
-
-	_HeapDeleteCharBuffer(e_buffer);
-#endif
 
 	bool result;
 	if(server.db->GetLoginDataFromAccountName(e_user, d_pass_hash, d_account_id) == false)
@@ -285,17 +269,10 @@ void Client::Handle_Login(const char* data, unsigned int size)
 		lrbs->unknown12[0] = 0x01;
 		memcpy(lrbs->key, key.c_str(), key.size());
 
-#ifdef WIN32
 		unsigned int e_size;
 		char *encrypted_buffer = server.eq_crypto->Encrypt((const char*)lrbs, 75, e_size);
 		memcpy(llas->encrypt, encrypted_buffer, 80);
 		server.eq_crypto->DeleteHeap(encrypted_buffer);
-#else
-		unsigned int e_size;
-		char *encrypted_buffer = Encrypt((const char*)lrbs, 75, e_size);
-		memcpy(llas->encrypt, encrypted_buffer, 80);
-		_HeapDeleteCharBuffer(encrypted_buffer);
-#endif
 
 		if(server.options.IsDumpOutPacketsOn())
 		{

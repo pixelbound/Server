@@ -6,15 +6,12 @@ SET(eqlogin_sources
     Config.cpp
     DatabaseMySQL.cpp
     DatabasePostgreSQL.cpp
+    Encryption.cpp
     ErrorLog.cpp
     Main.cpp
     ServerManager.cpp
     WorldServer.cpp
 )
-
-IF(MSVC OR MINGW)
-    SET(eqlogin_sources ${eqlogin_sources} Encryption.cpp)
-ENDIF(MSVC OR MINGW)
 
 SET(eqlogin_headers
     Client.h
@@ -32,11 +29,6 @@ SET(eqlogin_headers
     ServerManager.h
     WorldServer.h
 )
-
-IF(UNIX)
-    SET(EQEMU_UNIX_ENC_LIBRARY_LOC "${CMAKE_SOURCE_DIR}/dependencies" CACHE PATH "Location of EQEmuAuthCrypto and cryptopp")
-    LINK_DIRECTORIES(${EQEMU_UNIX_ENC_LIBRARY_LOC})
-ENDIF(UNIX)
 
 ADD_EXECUTABLE(loginserver ${eqlogin_sources} ${eqlogin_headers})
 
@@ -58,8 +50,6 @@ IF(UNIX)
     TARGET_LINK_LIBRARIES(loginserver "m")
     TARGET_LINK_LIBRARIES(loginserver "rt")
     TARGET_LINK_LIBRARIES(loginserver "pthread")
-    TARGET_LINK_LIBRARIES(loginserver "EQEmuAuthCrypto")
-    TARGET_LINK_LIBRARIES(loginserver "cryptopp")
     ADD_DEFINITIONS(-fPIC)
 ENDIF(UNIX)
 

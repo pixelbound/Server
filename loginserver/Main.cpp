@@ -174,7 +174,6 @@ int main()
 		return 1;
 	}
 
-#if WIN32
 	//initialize our encryption.
 	server_log->Log(log_debug, "Encryption Initialize.");
 	server.eq_crypto = new Encryption();
@@ -194,7 +193,6 @@ int main()
 		delete server_log;
 		return 1;
 	}
-#endif
 
 	//create our server manager.
 	server_log->Log(log_debug, "Server Manager Initialize.");
@@ -203,10 +201,8 @@ int main()
 	{
 		//We can't run without a server manager, cleanup and exit.
 		server_log->Log(log_error, "Server Manager Failed to Start.");
-#ifdef WIN32
 		server_log->Log(log_debug, "Encryption System Shutdown.");
 		delete server.eq_crypto;
-#endif
 		server_log->Log(log_debug, "Database System Shutdown.");
 		delete server.db;
 		server_log->Log(log_debug, "Config System Shutdown.");
@@ -225,10 +221,8 @@ int main()
 		server_log->Log(log_error, "Client Manager Failed to Start.");
 		server_log->Log(log_debug, "Server Manager Shutdown.");
 		delete server.SM;
-#ifdef WIN32
 		server_log->Log(log_debug, "Encryption System Shutdown.");
 		delete server.eq_crypto;
-#endif
 		server_log->Log(log_debug, "Database System Shutdown.");
 		delete server.db;
 		server_log->Log(log_debug, "Config System Shutdown.");
@@ -260,10 +254,8 @@ int main()
 	delete server.CM;
 	server_log->Log(log_debug, "Server Manager Shutdown.");
 	delete server.SM;
-#ifdef WIN32
 	server_log->Log(log_debug, "Encryption System Shutdown.");
 	delete server.eq_crypto;
-#endif
 	server_log->Log(log_debug, "Database System Shutdown.");
 	delete server.db;
 	server_log->Log(log_debug, "Config System Shutdown.");

@@ -20,6 +20,7 @@
 
 #ifdef WIN32
 #include <windows.h>
+#endif
 #include <string>
 
 using namespace std;
@@ -38,7 +39,7 @@ public:
 	/**
 	 * Constructor, sets all member pointers to NULL.
 	 */
-	Encryption() : h_dll(NULL), encrypt_func(NULL), decrypt_func(NULL), delete_func(NULL) { };
+	Encryption() : h_dll(NULL), encrypt_func(NULL), decrypt_func(NULL), delete_func(NULL) { }
 
 	/**
 	 * Destructor, if it's loaded it unloads this library.
@@ -48,7 +49,7 @@ public:
 	/**
 	 * Returns true if the dll is loaded, otherwise false.
 	 */
-	inline bool	Loaded() { return (h_dll != NULL); }
+	inline bool Loaded() { return (h_dll != NULL); }
 
 	/**
 	 * Loads the plugin.
@@ -95,12 +96,15 @@ private:
 	 */
 	void *GetSym(const char *name);
 
+#ifdef WIN32
 	HINSTANCE h_dll;
+#else
+    void *h_dll;
+#endif
 	DLLFUNC_Encrypt encrypt_func;
 	DLLFUNC_DecryptUsernamePassword decrypt_func;
 	DLLFUNC_HeapDelete delete_func;
 };
 
-#endif
 #endif
 

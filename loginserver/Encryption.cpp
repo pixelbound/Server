@@ -19,6 +19,12 @@
 #include "Encryption.h"
 #include "ErrorLog.h"
 
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
+
 extern ErrorLog *server_log;
 
 bool Encryption::LoadCrypto(string name)
@@ -81,6 +87,7 @@ void Encryption::DeleteHeap(char *buffer)
 	}
 }
 
+#ifdef WIN32
 bool Encryption::Load(const char *name)
 {
 	SetLastError(0);
@@ -141,4 +148,45 @@ void *Encryption::GetSym(const char *name)
 		return NULL;
 	}
 }
+#else
+bool Encryption::Load(const char *name)
+{
+    h_dll = dlopen(name, RTLD_NOW);
+    return (h_dll != NULL);
+}
 
+void Encryption::Unload()
+{
+    if(h_dll)
+    {
+        dlclose(h_dll);
+        h_dll = NULL;
+    }
+}
+
+bool Encryption::GetSym(const char *name, void **sym)
+{
+    if(Loaded())
+    {
+        *sym = dlsym(h_dll, name);
+        return(*sym != NULL);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void *Encryption::GetSym(const char *name)
+{
+    if(Loaded())
+    {
+        return dlsym(h_dll, name);
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+#endif
